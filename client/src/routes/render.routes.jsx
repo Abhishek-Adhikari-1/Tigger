@@ -1,3 +1,4 @@
+import { Protect, RedirectToSignIn } from "@clerk/clerk-react";
 import { Route } from "react-router-dom";
 
 export default function renderRoutes(routesArray) {
@@ -6,10 +7,11 @@ export default function renderRoutes(routesArray) {
       const element = isPublic ? (
         <Component />
       ) : (
-        <div>
-          <div>This is procted route</div>
-          <Component />
-        </div>
+        <>
+          <Protect fallback={<RedirectToSignIn />}>
+            <Component />
+          </Protect>
+        </>
       );
 
       return (

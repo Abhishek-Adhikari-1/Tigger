@@ -4,15 +4,23 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/react-router": "^2.3.1",
+    "@clerk/themes": "^2.4.41",
+    "@tailwindcss/vite": "^4.1.17",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.555.0",
+    "next-themes": "^0.4.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.10.0"
+    "react-router-dom": "^7.10.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

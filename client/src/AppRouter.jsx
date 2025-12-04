@@ -4,11 +4,9 @@ import renderRoutes from "./routes/render.routes";
 
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
       <Routes>
         {renderRoutes(routes)}
         <Route path="*" element={<h1>404 - Not Found</h1>} />
       </Routes>
-    </BrowserRouter>
   );
 }

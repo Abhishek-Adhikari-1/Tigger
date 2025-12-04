@@ -1,13 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>client</title>
+    <link href="/src/global.css" rel="stylesheet" />
+    <title>Tigger</title>
   </head>
   <body>
     <div id="root"></div>
+
+    <script>
+      function applyTheme(theme) {
+        document.documentElement.classList.remove("dark", "light");
+        if (theme === "system") {
+          const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+          document.documentElement.classList.add(
+            systemDark.matches ? "dark" : "light"
+          );
+          systemDark.addEventListener("change", (e) => {
+            if (localStorage.getItem("theme") === "system") {
+              document.documentElement.classList.remove("dark", "light");
+              document.documentElement.classList.add(
+                e.matches ? "dark" : "light"
+              );
+            }
+          });
+        } else {
+          document.documentElement.classList.add(theme);
+        }
+      }
+
+      window.theme = localStorage.getItem("theme") || "system";
+      localStorage.setItem("theme", window.theme);
+      applyTheme(window.theme);
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

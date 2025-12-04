@@ -1,22 +1,29 @@
-import ForgotPassword from "../app/(auth)/forgot-password/page";
-import SignIn from "../app/(auth)/signin/page";
-import SignUp from "../app/(auth)/signup/page";
+import AuthLayout from "../layouts/AuthLayout";
+import SignInPage from "../app/auth/signin/page";
+import SignUpPage from "../app/auth/signup/page";
+import DashboardPage from "../app/dashboard/page";
 
 const routes = [
   {
-    path: "/signin",
-    component: SignIn,
+    path: "/auth",
+    component: AuthLayout,
     public: true,
+    children: [
+      {
+        path: "signin/*",
+        component: SignInPage,
+        public: true,
+      },
+      {
+        path: "signup/*",
+        component: SignUpPage,
+        public: true,
+      },
+    ],
   },
   {
-    path: "/signup",
-    component: SignUp,
-    public: true,
-  },
-
-  {
-    path: "/forgot-password",
-    component: ForgotPassword,
+    path: "/",
+    component: DashboardPage,
     public: false,
   },
 ];
