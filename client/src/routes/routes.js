@@ -1,7 +1,11 @@
+import { lazy } from "react";
 import AuthLayout from "../layouts/AuthLayout";
-import SignInPage from "../app/auth/signin/page";
-import SignUpPage from "../app/auth/signup/page";
-import DashboardPage from "../app/dashboard/page";
+import MainLayout from "../layouts/MainLayout";
+
+const SignInPage = lazy(() => import("../app/auth/signin/page"));
+const SignUpPage = lazy(() => import("../app/auth/signup/page"));
+const DashboardPage = lazy(() => import("../app/dashboard/page"));
+const ProjectsPage = lazy(() => import("../app/projects/page"));
 
 const routes = [
   {
@@ -23,8 +27,20 @@ const routes = [
   },
   {
     path: "/",
-    component: DashboardPage,
+    component: MainLayout,
     public: false,
+    children: [
+      {
+        path: "",
+        component: DashboardPage,
+        public: false,
+      },
+      {
+        path: "projects",
+        component: ProjectsPage,
+        public: false,
+      },
+    ],
   },
 ];
 

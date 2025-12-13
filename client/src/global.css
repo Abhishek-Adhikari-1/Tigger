@@ -6,20 +6,23 @@
 @theme inline {
   --color-background: var(--background);
   --color-card: var(--card);
+  --color-primary: var(--primary);
 }
 
 :root {
   --background: #f3f3f3;
   --card: #ffffff;
+  --primary: #4b42f0;
 }
 
 .dark {
   --background: #121212;
   --card: #212126;
+  --primary: #7770ff;
 }
 
 html,
-body {
+body, #root {
   font-family: "Inter", sans-serif;
   height: 100%;
 }

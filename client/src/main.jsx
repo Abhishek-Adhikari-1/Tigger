@@ -42,6 +42,10 @@ export function Root() {
             socialButtonsPlacement: "bottom",
           },
           theme: resolvedTheme === "dark" ? dark : light,
+          variables: {
+            colorPrimary: resolvedTheme === "dark" ? "#7770ff" : "#4b42f0",
+            colorPrimaryForeground: "#ffffff",
+          },
         }}
       >
         <AppRouter />
