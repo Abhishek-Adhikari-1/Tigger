@@ -1,18 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { apiLimiter } from "./middlewares/rate_limiter.js";
-import authRoutes from "./routes/auth.routes.js";
+import { clerkMiddleware } from "@clerk/express";
+import { apiLimiter } from "./middlewares/rate_limiter.middleware.js";
+import { clerkAuth } from "./middlewares/auth.middleware.js";
+import { dbConnection } from "./config/db.js";
+import { projectRoutes } from "./routes/project.routes.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173",
-];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
 
 app.use(
   cors({
@@ -30,6 +30,7 @@ app.use(
 );
 
 app.use(apiLimiter);
+app.use(clerkMiddleware());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -40,7 +41,14 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/projects", clerkAuth, projectRoutes);
+
+app.get("/api/protected", clerkAuth, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "This is a protected route",
+  });
+});
 
 app.use((req, res) => {
   res.status(404).json({
@@ -59,6 +67,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, async () => {
+  await dbConnection();
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
