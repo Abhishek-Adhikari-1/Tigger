@@ -93,9 +93,9 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-68 border-r border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+      <aside className="hidden lg:flex lg:flex-col w-68 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <WorkspaceDropdown />
-        <hr className="border-gray-200 dark:border-zinc-800" />
+        <hr className="border-zinc-200 dark:border-zinc-800" />
         {SidebarContent}
         {SecondaryContent()}
       </aside>
@@ -134,7 +134,7 @@ export default function Sidebar() {
                     <XIcon className="h-6 w-6" />
                   </button>
                 </div>
-                <hr className="border-gray-200 dark:border-zinc-800" />
+                <hr className="border-zinc-200 dark:border-zinc-800" />
                 {SidebarContent}
                 {SecondaryContent()}
               </DialogPanel>

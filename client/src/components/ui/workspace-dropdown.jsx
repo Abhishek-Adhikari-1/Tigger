@@ -7,6 +7,7 @@ import {
   useOrganization,
 } from "@clerk/react-router";
 import { cn } from "../../utils/utils";
+import { useProjectsStore } from "../../store/use-project";
 
 function WorkspaceDropdown({ className }) {
   const {
@@ -22,6 +23,8 @@ function WorkspaceDropdown({ className }) {
       keepPreviousData: true,
     },
   });
+
+  const { refresh: refreshProjects } = useProjectsStore();
 
   const { membership } = useOrganization();
 
@@ -92,9 +95,7 @@ function WorkspaceDropdown({ className }) {
       {isOpen && (
         <div className="absolute z-50 w-64 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg shadow-sm top-full left-0 overflow-hidden">
           <div className="p-2 space-y-2">
-            <p className="text-xs text-gray-500 uppercase px-2">
-              Workspaces
-            </p>
+            <p className="text-xs text-gray-500 uppercase px-2">Workspaces</p>
 
             <div className="max-h-96 overflow-y-auto">
               {workspaceList.map(({ organization: ws, roleName }) => {
@@ -109,7 +110,10 @@ function WorkspaceDropdown({ className }) {
                   >
                     <div
                       {...(!isActive && {
-                        onClick: () => onSelectWorkspace(ws.id),
+                        onClick: async() => {
+                          await onSelectWorkspace(ws.id);
+                          await refreshProjects();
+                        },
                       })}
                       className={cn(
                         "flex items-center gap-3 p-2 rounded",
@@ -139,7 +143,7 @@ function WorkspaceDropdown({ className }) {
                               }`}
                         </p>
                       </div>
-                      {/* {isActive && <Check className="w-4 h-4 text-blue-600" />} */}
+                      {isActive && <Check className="w-4 h-4 text-blue-600" />}
                     </div>
                     {isActive && workspaceList.length > 1 && (
                       <hr className="text-zinc-300 dark:text-zinc-700 mb-1" />
