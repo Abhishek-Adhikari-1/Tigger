@@ -1,4 +1,5 @@
 import { Project } from "../schema/project.schema.js";
+import { Op, Sequelize } from "sequelize";
 
 const createProject = async (req, res) => {
   try {
@@ -86,7 +87,38 @@ const getAllProjects = async (req, res) => {
       });
     }
 
-    const projects = await Project.findAll({ where: { orgId } });
+    const { query } = req?.query || {};
+    var projects = [];
+
+    if (!query) {
+      projects = await Project.findAll({ where: { orgId } });
+    } else {
+      projects = await Project.findAll({
+        where: {
+          orgId,
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${query}%` } },
+            { description: { [Op.iLike]: `%${query}%` } },
+
+            Sequelize.where(Sequelize.cast(Sequelize.col("status"), "text"), {
+              [Op.iLike]: `%${query}%`,
+            }),
+
+            Sequelize.where(Sequelize.cast(Sequelize.col("priority"), "text"), {
+              [Op.iLike]: `%${query}%`,
+            }),
+
+            { project_manager: { [Op.iLike]: `%${query}%` } },
+
+            {
+              team_members: {
+                [Op.contains]: [query],
+              },
+            },
+          ],
+        },
+      });
+    }
 
     const formattedProjects = projects?.map((project) => ({
       projectId: project.projectId,

@@ -4,56 +4,81 @@ import {
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import Card from "../../components/ui/card";
 import { useProjectsStore } from "../../store/use-project";
 import { cn } from "../../utils/utils";
-import { Link } from "react-router-dom";
+import { useDebouncedCallback } from "../../store/use-debounced-callback";
+
+const statusColors = {
+  Active:
+    "bg-indigo-300 dark:bg-indigo-700 text-indigo-700 dark:text-indigo-200",
+  Completed:
+    "bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-300",
+  Hold: "bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-300",
+  Planning: "bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-300",
+  Cancelled: "bg-red-200 dark:bg-red-900 text-red-950 dark:text-red-300",
+  Inactive: "bg-gray-200 dark:bg-zinc-600 text-gray-900 dark:text-zinc-200",
+};
 
 export default function ProjectsPage() {
-  const { projects, loading, error } = useProjectsStore();
+  const { projects, loading } = useProjectsStore();
 
-  console.log({
-    loading,
-    error,
-    projects,
-  });
+  const [searchData, setSearchData] = useState(null);
 
-  const statusColors = {
-    Active:
-      "bg-indigo-300 dark:bg-indigo-700 text-indigo-700 dark:text-indigo-200",
-    Completed:
-      "bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-300",
-    Hold: "bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-300",
-    Planning: "bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-300",
-    Cancelled: "bg-red-200 dark:bg-red-900 text-red-950 dark:text-red-300",
-    Inactive: "bg-gray-200 dark:bg-zinc-600 text-gray-900 dark:text-zinc-200",
-  };
+  const isSearching = searchData !== null;
+  const list = isSearching ? searchData : projects;
+
+  const debouncedSearch = useDebouncedCallback(async (value) => {
+    if (!value) {
+      setSearchData(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/projects/all?query=${encodeURIComponent(value)}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSearchData(data.data || []);
+      } else {
+        setSearchData([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setSearchData([]);
+    }
+  }, 500);
 
   return (
     <div className="space-y-6 py-3 px-2 md:px-4 md:py-4 xl:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start lg:items-center gap-6">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1">
-            {" "}
-            Projects{" "}
+            Projects
           </h1>
           <p className="text-gray-500 dark:text-zinc-400 text-sm">
-            {" "}
-            Manage and track your projects{" "}
+            Manage and track your projects
           </p>
         </div>
-        <div className="max-sm:flex justify-end">
-          <button
-            // onClick={() => setIsDialogOpen(true)}
-            className="flex items-center px-5 py-2 text-sm rounded bg-linear-to-br from-indigo-500 to-indigo-600 text-white hover:opacity-90 transition "
-          >
-            <PlusIcon className="size-4 mr-2" strokeWidth={2} /> New Project
-          </button>
-        </div>
-        {/* <CreateProjectDialog
-          isDialogOpen={isDialogOpen}
-          setIsDialogOpen={setIsDialogOpen}
-        /> */}
+
+        <button className="flex items-center px-5 py-2 text-sm rounded bg-linear-to-br from-indigo-500 to-indigo-600 text-white hover:opacity-90 transition">
+          <PlusIcon className="size-4 mr-2" />
+          New Project
+        </button>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -62,8 +87,11 @@ export default function ProjectsPage() {
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-zinc-400 w-4 h-4" />
 
             <input
-              // onChange={(e) => setSearchTerm(e.target.value)}
-              // value={searchTerm}
+              type="search"
+              onChange={(e) => {
+                const value = e.target.value.trim();
+                debouncedSearch(value);
+              }}
               className="w-full pl-10 text-sm pr-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-400 focus:ring focus:ring-indigo-500 outline-none"
               placeholder="Search projects..."
             />
@@ -109,72 +137,72 @@ export default function ProjectsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects?.map((p) => (
-          <div key={p.projectId}>
-            <Link to={`/projects/${p.projectId}`}>
-              <Card className={"h-full"}>
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-zinc-200 mb-1 truncate group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors duration-200">
-                      {p?.name}
-                    </h3>
-                    <p className="text-gray-500 dark:text-zinc-400 text-sm line-clamp-2 mb-3">
-                      {p?.description || "No description"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <span
-                    className={cn(
-                      "px-2 py-0.5 rounded text-xs",
-                      statusColors[p?.status]
-                    )}
-                  >
-                    {p?.status.replace("_", " ")}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-zinc-500 capitalize">
-                    {p?.priority} priority
-                  </span>
-                </div>
-              </Card>
-            </Link>
-          </div>
+        {list?.map((p) => (
+          <ProjectCard key={p.projectId} p={p} />
         ))}
       </div>
 
-      {!loading && projects?.length === 0 && (
-        <div className="mt-4">
-          <NoProjectsFound />
-        </div>
+      {!loading && isSearching && searchData.length === 0 && (
+        <NoProjectsFound message="No projects match your search" />
       )}
-      {/* {loading && (
-        <div className="mt-4">
-          <LoadingSpinner />
-        </div>
-      )} */}
+
+      {!loading && !isSearching && projects.length === 0 && (
+        <NoProjectsFound message="No projects found" />
+      )}
     </div>
   );
 }
 
-function NoProjectsFound() {
+function ProjectCard({ p }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div className="col-span-full text-center py-16">
-        <div className="w-24 h-24 mx-auto mb-6 bg-indigo-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-          <FolderOpenIcon className="w-12 h-12 text-indigo-400 dark:text-zinc-400" />
+    <Link to={`/projects/${p.projectId}`}>
+      <Card className="h-full">
+        <div className="mb-3">
+          <h3 className="font-semibold text-gray-900 dark:text-zinc-200 truncate">
+            {p.name}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-zinc-400 line-clamp-2">
+            {p.description || "No description"}
+          </p>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-          No projects found
-        </h3>
-        <p className="text-gray-500 dark:text-zinc-400 mb-6 text-sm">
-          Create your first project to get started
-        </p>
-        <button className="flex items-center gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded mx-auto text-sm">
-          <PlusIcon className="size-4" />
-          Create Project
-        </button>
+
+        <div className="flex justify-between items-center">
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded text-xs",
+              statusColors[p.status]
+            )}
+          >
+            {p.status}
+          </span>
+          <span className="text-xs text-gray-500 capitalize">
+            {p.priority} priority
+          </span>
+        </div>
+      </Card>
+    </Link>
+  );
+}
+
+function NoProjectsFound({ message }) {
+  return (
+    <div className="text-center py-16">
+      <div className="w-24 h-24 mx-auto mb-6 bg-indigo-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
+        <FolderOpenIcon className="w-12 h-12 text-indigo-400" />
       </div>
+
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+        {message}
+      </h3>
+
+      <p className="text-sm text-gray-500 dark:text-zinc-400 mb-6">
+        Try a different keyword or create a new project
+      </p>
+
+      <button className="inline-flex items-center gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
+        <PlusIcon className="size-4" />
+        Create Project
+      </button>
     </div>
   );
 }

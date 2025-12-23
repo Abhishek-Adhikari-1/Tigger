@@ -6,6 +6,9 @@ const SignInPage = lazy(() => import("../app/auth/signin/page"));
 const SignUpPage = lazy(() => import("../app/auth/signup/page"));
 const DashboardPage = lazy(() => import("../app/dashboard/page"));
 const ProjectsPage = lazy(() => import("../app/projects/page"));
+const ProjectPageSpecific = lazy(() =>
+  import("../app/projects/[projectId]/page")
+);
 
 const routes = [
   {
@@ -31,13 +34,18 @@ const routes = [
     public: false,
     children: [
       {
-        path: "",
+        index: true,
         component: DashboardPage,
         public: false,
       },
       {
         path: "projects",
         component: ProjectsPage,
+        public: false,
+      },
+      {
+        path: "projects/:projectId",
+        component: ProjectPageSpecific,
         public: false,
       },
     ],

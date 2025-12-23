@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 
 export default function renderRoutes(routesArray) {
   return routesArray.map(
-    ({ path, component: Component, public: isPublic, children }) => {
+    ({ path, component: Component, public: isPublic, children, index }) => {
       const element = isPublic ? (
         <Component />
       ) : (
@@ -15,7 +15,7 @@ export default function renderRoutes(routesArray) {
       );
 
       return (
-        <Route key={path} path={path} element={element}>
+        <Route key={path} path={path} element={element} index={index}>
           {children && renderRoutes(children)}
         </Route>
       );
