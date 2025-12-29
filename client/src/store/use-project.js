@@ -35,6 +35,23 @@ const fetchProjectById = async (id = "") => {
   return res.json();
 };
 
+const postProject = async (payload) => {
+  const res = await fetch(`/api/projects/`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create project");
+  }
+
+  return res.json();
+};
+
 export const useProjectsStore = create((set, get) => ({
   projects: [],
   currentProject: null,
@@ -81,6 +98,19 @@ export const useProjectsStore = create((set, get) => ({
       });
     } catch (err) {
       set({ error: err.message, loading: false });
+    }
+  },
+
+  createProject: async (payload) => {
+    try {
+      const data = await postProject(payload);
+      if (!data.success) throw new Error(data.message);
+
+      set({
+        projects: [...get().projects, data.data],
+      });
+    } catch (err) {
+      set({ error: err.message });
     }
   },
 }));

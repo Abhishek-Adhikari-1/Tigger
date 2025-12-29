@@ -11,6 +11,7 @@ import Card from "../../components/ui/card";
 import { useProjectsStore } from "../../store/use-project";
 import { cn } from "../../utils/utils";
 import { useDebouncedCallback } from "../../store/use-debounced-callback";
+import { CreateProject } from "../../components/ui/create-project";
 
 const statusColors = {
   Active:
@@ -75,10 +76,7 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        <button className="flex items-center px-5 py-2 text-sm rounded bg-linear-to-br from-indigo-500 to-indigo-600 text-white hover:opacity-90 transition">
-          <PlusIcon className="size-4 mr-2" />
-          New Project
-        </button>
+        <CreateProject text="New Project" />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -156,8 +154,8 @@ export default function ProjectsPage() {
 function ProjectCard({ p }) {
   return (
     <Link to={`/projects/${p.projectId}`}>
-      <Card className="h-full">
-        <div className="mb-3">
+      <Card className="h-full flex flex-col justify-between">
+        <div className="mb-3 flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-zinc-200 truncate">
             {p.name}
           </h3>
@@ -186,7 +184,7 @@ function ProjectCard({ p }) {
 
 function NoProjectsFound({ message }) {
   return (
-    <div className="text-center py-16">
+    <div className="py-16 flex flex-col items-center">
       <div className="w-24 h-24 mx-auto mb-6 bg-indigo-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
         <FolderOpenIcon className="w-12 h-12 text-indigo-400" />
       </div>
@@ -199,10 +197,11 @@ function NoProjectsFound({ message }) {
         Try a different keyword or create a new project
       </p>
 
-      <button className="inline-flex items-center gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
-        <PlusIcon className="size-4" />
-        Create Project
-      </button>
+      <CreateProject
+        className={
+          "inline-flex items-center gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm"
+        }
+      />
     </div>
   );
 }

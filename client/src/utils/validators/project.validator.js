@@ -53,7 +53,12 @@ export const createProjectSchema = z
       .min(1, "Project manager is required"),
 
     team_members: z
-      .array(z.string().trim().min(1))
+      .array(
+        z.object({
+          userId: z.string().min(1, "User ID is required"),
+          identifier: z.string().min(1, "Identifier is required"),
+        })
+      )
       .default([])
       .refine(
         (arr) => new Set(arr).size === arr.length,
@@ -64,5 +69,3 @@ export const createProjectSchema = z
     message: "Start date cannot be after end date",
     path: ["start_date"],
   });
-
-export const updateProjectSchema = createProjectSchema.partial();

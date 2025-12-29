@@ -47,6 +47,7 @@ const createProject = async (req, res) => {
       success: true,
       message: "Project created successfully",
       data: {
+        projectId: project.projectId,
         orgId: project.orgId,
         name: project.name,
         description: project.description,
