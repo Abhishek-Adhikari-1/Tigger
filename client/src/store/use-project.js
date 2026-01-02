@@ -95,6 +95,7 @@ export const useProjectsStore = create((set, get) => ({
       set({
         currentProject: data.data,
         loading: false,
+        error: null,
       });
     } catch (err) {
       set({ error: err.message, loading: false });
@@ -108,6 +109,7 @@ export const useProjectsStore = create((set, get) => ({
 
       set({
         projects: [...get().projects, data.data],
+        error: null,
       });
     } catch (err) {
       set({ error: err.message });
@@ -130,6 +132,7 @@ export const useProjectsStore = create((set, get) => ({
       projects: data.data,
       loading: false,
       initialized: true,
+      error: null,
     });
   } catch (err) {
     useProjectsStore.setState({

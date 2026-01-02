@@ -6,6 +6,7 @@ import { apiLimiter } from "./middlewares/rate_limiter.middleware.js";
 import { clerkAuth } from "./middlewares/auth.middleware.js";
 import { dbConnection } from "./config/db.js";
 import { projectRoutes } from "./routes/project.routes.js";
+import { taskRoutes } from "./routes/task.routes.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/projects", clerkAuth, projectRoutes);
+app.use("/api/tasks", clerkAuth, taskRoutes);
 
 app.get("/api/protected", clerkAuth, (req, res) => {
   res.status(200).json({
