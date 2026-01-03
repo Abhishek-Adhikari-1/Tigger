@@ -59,3 +59,5 @@ export const createTaskSchema = z.object({
     })
     .trim(),
 });
+
+export const updateTaskSchema = createTaskSchema.partial();

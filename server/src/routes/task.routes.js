@@ -7,4 +7,12 @@ const router = express.Router();
 
 router.post("/", validateBody(createTaskSchema), TaskController.createTask);
 
+router.get("/all", TaskController.getAllTasks);
+
+router.get("/:taskId", TaskController.getTaskById);
+
+router.delete("/:taskId", TaskController.deleteTask);
+
+router.patch("/:taskId", TaskController.updateTask);
+
 export { router as taskRoutes };
