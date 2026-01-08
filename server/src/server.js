@@ -30,7 +30,7 @@ app.use(
   })
 );
 
-app.use(apiLimiter);
+// app.use(apiLimiter);
 app.use(clerkMiddleware());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
