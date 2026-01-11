@@ -17,6 +17,6 @@ router.get("/:projectId", ProjectController.getProjectById);
 
 router.delete("/:projectId", ProjectController.deleteProject);
 
-router.patch("/:projectId", validateBody(updateProjectSchema), ProjectController.updateProject);
+router.put("/:projectId", validateBody(updateProjectSchema), ProjectController.updateProject);
 
 export { router as projectRoutes };

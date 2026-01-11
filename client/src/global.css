@@ -13,13 +13,18 @@
   --background: #f3f3f3;
   --card: #ffffff;
   --primary: #4b42f0;
+  --primary-soft: rgba(75, 66, 240, 0.4);
+  --primary-faint: rgba(75, 66, 240, 0.25);
 }
 
 .dark {
   --background: #121212;
   --card: #212126;
   --primary: #7770ff;
+  --primary-soft: rgba(119, 112, 255, 0.45);
+  --primary-faint: rgba(119, 112, 255, 0.3);
 }
+
 
 html,
 body, #root {
@@ -29,4 +34,66 @@ body, #root {
 
 body {
   @apply bg-background;
+}
+
+@layer utilities {
+  @keyframes beforeShadow {
+    0% {
+      width: 0.5rem;
+      box-shadow:
+        1rem -0.5rem var(--primary),
+       -1rem  0.5rem var(--primary-soft);
+    }
+    35% {
+      width: 2.5rem;
+      box-shadow:
+        0 -0.5rem var(--primary),
+        0  0.5rem var(--primary-soft);
+    }
+    70% {
+      width: 0.5rem;
+      box-shadow:
+       -1rem -0.5rem var(--primary),
+        1rem  0.5rem var(--primary-soft);
+    }
+    100% {
+      box-shadow:
+        1rem -0.5rem var(--primary),
+       -1rem  0.5rem var(--primary-soft);
+    }
+  }
+
+  @keyframes afterShadow {
+    0% {
+      height: 0.5rem;
+      box-shadow:
+        0.5rem  1rem var(--primary-faint),
+       -0.5rem -1rem var(--primary-soft);
+    }
+    35% {
+      height: 2.5rem;
+      box-shadow:
+        0.5rem 0 var(--primary-faint),
+       -0.5rem 0 var(--primary-soft);
+    }
+    70% {
+      height: 0.5rem;
+      box-shadow:
+        0.5rem -1rem var(--primary-faint),
+       -0.5rem  1rem var(--primary-soft);
+    }
+    100% {
+      box-shadow:
+        0.5rem  1rem var(--primary-faint),
+       -0.5rem -1rem var(--primary-soft);
+    }
+  }
+
+  .animate-beforeShadow {
+    animation: beforeShadow 2s infinite ease-in-out;
+  }
+
+  .animate-afterShadow {
+    animation: afterShadow 2s infinite ease-in-out;
+  }
 }

@@ -12,6 +12,11 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+export function toDateInputValue(date) {
+  if (!date) return "";
+  return new Date(date).toISOString().split("T")[0];
+}
+
 export const statusColors = {
   Active:
     "bg-indigo-300 dark:bg-indigo-700 text-indigo-700 dark:text-indigo-200",

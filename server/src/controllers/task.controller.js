@@ -329,11 +329,11 @@ const updateTask = async (req, res) => {
       });
     }
 
-    const updated = await Task.update(updates, {
+    const [affectedCount] = await Task.update(updates, {
       where: { id: taskId, projectId: project.projectId },
     });
 
-    if (!updated) {
+    if (affectedCount === 0) {
       return res.status(404).json({
         success: false,
         message: "Task not found",

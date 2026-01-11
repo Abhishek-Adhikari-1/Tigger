@@ -8,6 +8,7 @@ import {
 } from "@clerk/react-router";
 import { cn } from "../../utils/utils";
 import { useProjectsStore } from "../../store/use-project";
+import { useTasksStore } from "../../store/use-task";
 
 function WorkspaceDropdown({ className }) {
   const {
@@ -25,6 +26,7 @@ function WorkspaceDropdown({ className }) {
   });
 
   const { refresh: refreshProjects } = useProjectsStore();
+  const { refresh: refreshTasks } = useTasksStore();
 
   const { membership } = useOrganization();
 
@@ -110,9 +112,10 @@ function WorkspaceDropdown({ className }) {
                   >
                     <div
                       {...(!isActive && {
-                        onClick: async() => {
+                        onClick: async () => {
                           await onSelectWorkspace(ws.id);
                           await refreshProjects();
+                          await refreshTasks();
                         },
                       })}
                       className={cn(

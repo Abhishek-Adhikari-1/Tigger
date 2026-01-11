@@ -8,6 +8,8 @@ import { useTasksStore } from "../../../store/use-task";
 import { ProjectTasksKanban } from "../../../components/ui/project-tasks-kanban";
 import Tabs from "../../../components/ui/tabs";
 import CalanderView from "../../../components/ui/calander-view";
+import ProjectSettings from "../../../components/ui/project-settings";
+import ProjectAnalytics from "../../../components/ui/project-analytics";
 
 export default function ProjectPageSpecific() {
   const { projectId } = useParams();
@@ -152,8 +154,14 @@ export default function ProjectPageSpecific() {
               <CalanderView />
             </div>
           )}
-          {activeTab === "analytics" && <div>Analytics Content</div>}
-          {activeTab === "settings" && <div>Settings Content</div>}
+          {activeTab === "analytics" && (
+            <ProjectAnalytics tasks={allTasks} project={currentProject} />
+          )}
+          {activeTab === "settings" && (
+            <div>
+              <ProjectSettings />
+            </div>
+          )}
         </div>
       </div>
     </div>

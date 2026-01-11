@@ -69,3 +69,54 @@ export const createProjectSchema = z
     message: "Start date cannot be after end date",
     path: ["start_date"],
   });
+
+export const updateProjectSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .nonempty({ message: "Project name cannot be empty" })
+      .min(3, "Project name is too short")
+      .max(100)
+      .transform((v) => v.replace(/\s+/g, " "))
+      .optional(),
+
+    description: z
+      .string()
+      .trim()
+      .max(1000, { message: "Description is too long" })
+      .optional(),
+
+    priority: z.enum(PRIORITIES).optional(),
+    status: z.enum(STATUSES).optional(),
+
+    start_date: z.coerce.date().optional(),
+    end_date: z.coerce.date().optional(),
+
+    project_manager: z.string().trim().min(1).optional(),
+
+    team_members: z
+      .array(
+        z.object({
+          userId: z.string().min(1, "User ID is required"),
+          identifier: z.string().min(1, "Identifier is required"),
+        })
+      )
+      .refine(
+        (arr) => new Set(arr.map((m) => m.userId)).size === arr.length,
+        "Duplicate team members are not allowed"
+      )
+      .optional(),
+  })
+  .refine(
+    ({ start_date, end_date }) => {
+      if (start_date && end_date) {
+        return start_date <= end_date;
+      }
+      return true;
+    },
+    {
+      message: "Start date cannot be after end date",
+      path: ["start_date"],
+    }
+  );

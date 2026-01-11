@@ -62,7 +62,7 @@ export const useTasksStore = create((set, get) => ({
 
   syncTaskStatus: async (taskId, newStatus, projectId) => {
     const res = await fetch(`/api/tasks/${taskId}?projectId=${projectId}`, {
-      method: "PATCH",
+      method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
@@ -74,13 +74,13 @@ export const useTasksStore = create((set, get) => ({
   },
 
   updateTaskStatusOptimistic: (taskId, newStatus) => {
-    const task = get().allTasks.find((t) => t.id === taskId);
+    const task = get().allTasks.find((t) => String(t.id) === String(taskId));
 
     if (!task) return null;
 
     set({
       allTasks: get().allTasks.map((t) =>
-        t.id === taskId ? { ...t, status: newStatus } : t
+        String(t.id) === String(taskId) ? { ...t, status: newStatus } : t
       ),
     });
 
@@ -90,8 +90,20 @@ export const useTasksStore = create((set, get) => ({
   rollbackTaskStatus: (taskId, prevStatus) => {
     set({
       allTasks: get().allTasks.map((t) =>
-        t.id === taskId ? { ...t, status: prevStatus } : t
+        String(t.id) === String(taskId) ? { ...t, status: prevStatus } : t
       ),
     });
+  },
+
+  refresh: async () => {
+    if (get().loading) return;
+
+    set({ loading: true, error: null });
+
+    try {
+      set({ loading: false, error: null, currentProject: null, allTasks: [] });
+    } catch (err) {
+      set({ error: err.message || "Failed to fetch tasks", loading: false });
+    }
   },
 }));

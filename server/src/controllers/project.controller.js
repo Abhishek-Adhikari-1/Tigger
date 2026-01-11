@@ -148,9 +148,18 @@ const getAllProjects = async (req, res) => {
 
 const getProjectById = async (req, res) => {
   try {
+    const { orgId } = req.clerk;
+
+    if (!orgId) {
+      return res.status(400).json({
+        success: false,
+        message: "No organization selected",
+      });
+    }
+
     const { projectId } = req?.params || {};
 
-    const project = await Project.findOne({ where: { projectId } });
+    const project = await Project.findOne({ where: { projectId , orgId} });
 
     if (!project) {
       return res.status(404).json({
@@ -162,6 +171,7 @@ const getProjectById = async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
+        projectId: project.projectId,
         orgId: project.orgId,
         name: project.name,
         description: project.description,

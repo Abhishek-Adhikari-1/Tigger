@@ -13,6 +13,6 @@ router.get("/:taskId", TaskController.getTaskById);
 
 router.delete("/:taskId", TaskController.deleteTask);
 
-router.patch("/:taskId", TaskController.updateTask);
+router.put("/:taskId", TaskController.updateTask);
 
 export { router as taskRoutes };

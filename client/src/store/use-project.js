@@ -52,6 +52,23 @@ const postProject = async (payload) => {
   return res.json();
 };
 
+const putProject = async (id = "", payload) => {
+  const res = await fetch(`/api/projects/${id}`, {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update project");
+  }
+
+  return res.json();
+};
+
 export const useProjectsStore = create((set, get) => ({
   projects: [],
   currentProject: null,
@@ -113,6 +130,29 @@ export const useProjectsStore = create((set, get) => ({
       });
     } catch (err) {
       set({ error: err.message });
+    }
+  },
+
+  updateProject: async (id, payload) => {
+    try {
+      const data = await putProject(id, payload);
+      if (!data.success) throw new Error(data.message);
+
+      const updatedProject = data.data;
+
+      set((state) => ({
+        projects: state.projects.map((p) =>
+          p.projectId === id ? updatedProject : p
+        ),
+        currentProject:
+          state.currentProject?.projectId === id
+            ? updatedProject
+            : state.currentProject,
+        error: null,
+      }));
+    } catch (err) {
+      set({ error: err.message || "Failed to update project" });
+      throw err;
     }
   },
 }));

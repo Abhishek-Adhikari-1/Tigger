@@ -4,7 +4,7 @@ import {
   PlusIcon,
   SearchIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import Card from "../../components/ui/card";
@@ -17,9 +17,20 @@ export default function ProjectsPage() {
   const { projects, loading } = useProjectsStore();
 
   const [searchData, setSearchData] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [priorityFilter, setPriorityFilter] = useState("All");
 
   const isSearching = searchData !== null;
-  const list = isSearching ? searchData : projects;
+  const baseList = isSearching ? searchData : projects;
+
+  // Filter the list based on status and priority
+  const list = useMemo(() => {
+    return baseList?.filter((p) => {
+      const matchesStatus = statusFilter === "All" || p.status === statusFilter;
+      const matchesPriority = priorityFilter === "All" || p.priority === priorityFilter;
+      return matchesStatus && matchesPriority;
+    });
+  }, [baseList, statusFilter, priorityFilter]);
 
   const debouncedSearch = useDebouncedCallback(async (value) => {
     if (!value) {
@@ -88,8 +99,8 @@ export default function ProjectsPage() {
         <div className="flex flex-row gap-4">
           <div className="relative max-w-min">
             <select
-              // value={filters.status}
-              // onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
               name="filter_by_status"
               className="appearance-none px-3 pr-7 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-500"
             >
@@ -107,8 +118,8 @@ export default function ProjectsPage() {
 
           <div className="relative max-w-min">
             <select
-              // value={filters.status}
-              // onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
               name="filter_by_priority"
               className="appearance-none px-3 pr-7 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-sm focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-500"
             >

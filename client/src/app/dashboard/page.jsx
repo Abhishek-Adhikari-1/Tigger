@@ -85,9 +85,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-xs text-zinc-500">
+        {/* <div className="text-center text-xs text-zinc-500">
           Localhost · Clerk · Secure API
-        </div>
+        </div> */}
       </div>
     </div>
   );
