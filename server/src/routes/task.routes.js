@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.post("/", validateBody(createTaskSchema), TaskController.createTask);
 
+router.get("/my", TaskController.getMyTasks);
+
 router.get("/all", TaskController.getAllTasks);
 
 router.get("/:taskId", TaskController.getTaskById);

@@ -354,10 +354,59 @@ const updateTask = async (req, res) => {
   }
 };
 
+const getMyTasks = async (req, res) => {
+  try {
+    const { orgId, userId } = req.clerk;
+
+    if (!orgId) {
+      return res.status(400).json({
+        success: false,
+        message: "No organization selected",
+      });
+    }
+
+    // Find all tasks assigned to the current user across all projects in the org
+    const tasks = await Task.findAll({
+      where: { assignee: userId },
+      include: [
+        {
+          model: Project,
+          as: "project",
+          where: { orgId },
+          attributes: ["projectId", "name"],
+        },
+      ],
+      order: [["updatedAt", "DESC"]],
+      limit: 10,
+    });
+
+    const formattedTasks = tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      priority: task.priority,
+      projectId: task.projectId,
+      projectName: task.project?.name,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: formattedTasks,
+    });
+  } catch (error) {
+    console.error("Error in getMyTasks controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch tasks",
+    });
+  }
+};
+
 export const TaskController = {
   createTask,
   getAllTasks,
   getTaskById,
   deleteTask,
   updateTask,
+  getMyTasks,
 };
