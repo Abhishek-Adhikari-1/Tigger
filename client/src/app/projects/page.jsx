@@ -152,6 +152,9 @@ export default function ProjectsPage() {
 }
 
 function ProjectCard({ p }) {
+  // Use completion_rate from backend (calculated from actual tasks)
+  const completionRate = p.completion_rate ?? 0;
+
   return (
     <Link to={`/projects/${p.projectId}`}>
       <Card className="h-full flex flex-col justify-between">
@@ -164,18 +167,48 @@ function ProjectCard({ p }) {
           </p>
         </div>
 
-        <div className="flex justify-between items-center">
-          <span
-            className={cn(
-              "px-2 py-0.5 rounded text-xs",
-              statusColors[p.status]
-            )}
-          >
-            {p.status}
-          </span>
-          <span className="text-xs text-gray-500 capitalize">
-            {p.priority} priority
-          </span>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded text-xs",
+                statusColors[p.status]
+              )}
+            >
+              {p.status}
+            </span>
+            <span className="text-xs text-gray-500 capitalize">
+              {p.priority} priority
+            </span>
+          </div>
+
+          {/* Completion Rate Progress Bar */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-gray-500 dark:text-zinc-400">
+                Progress
+              </span>
+              <span className="text-xs font-medium text-gray-700 dark:text-zinc-300">
+                {completionRate}%
+              </span>
+            </div>
+            <div className="w-full h-2 bg-gray-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500 ease-out"
+                style={{
+                  width: `${completionRate}%`,
+                  background:
+                    completionRate === 100
+                      ? "#10b981"
+                      : completionRate >= 50
+                      ? "#6366f1"
+                      : completionRate > 0
+                      ? "#f59e0b"
+                      : "#e5e7eb",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </Card>
     </Link>

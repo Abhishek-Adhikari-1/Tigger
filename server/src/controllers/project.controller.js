@@ -1,4 +1,5 @@
 import { Project } from "../schema/project.schema.js";
+import { Task } from "../schema/task.schema.js";
 import { Op, Sequelize } from "sequelize";
 
 const createProject = async (req, res) => {
@@ -89,10 +90,24 @@ const getAllProjects = async (req, res) => {
     }
 
     const { query } = req?.query || {};
-    var projects = [];
+    let projects = [];
+    
+    const includeOptions = {
+      include: [
+        {
+          model: Task,
+          as: "tasks",
+          attributes: ["id", "status"],
+          required: false,
+        },
+      ],
+    };
 
     if (!query) {
-      projects = await Project.findAll({ where: { orgId } });
+      projects = await Project.findAll({ 
+        where: { orgId },
+        ...includeOptions,
+      });
     } else {
       projects = await Project.findAll({
         where: {
@@ -101,7 +116,7 @@ const getAllProjects = async (req, res) => {
             { name: { [Op.iLike]: `%${query}%` } },
             { description: { [Op.iLike]: `%${query}%` } },
 
-            Sequelize.where(Sequelize.cast(Sequelize.col("status"), "text"), {
+            Sequelize.where(Sequelize.cast(Sequelize.col("project.status"), "text"), {
               [Op.iLike]: `%${query}%`,
             }),
 
@@ -118,20 +133,33 @@ const getAllProjects = async (req, res) => {
             },
           ],
         },
+        ...includeOptions,
       });
     }
 
-    const formattedProjects = projects?.map((project) => ({
-      projectId: project.projectId,
-      name: project.name,
-      description: project.description,
-      priority: project.priority,
-      status: project.status,
-      start_date: project.start_date,
-      end_date: project.end_date,
-      project_manager: project.project_manager,
-      team_members: project.team_members,
-    }));
+    const formattedProjects = projects?.map((project) => {
+      const tasks = project.tasks || [];
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter((t) => t.status === "Done").length;
+      const inProgressTasks = tasks.filter((t) => t.status === "In Progress").length;
+      const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+      return {
+        projectId: project.projectId,
+        name: project.name,
+        description: project.description,
+        priority: project.priority,
+        status: project.status,
+        start_date: project.start_date,
+        end_date: project.end_date,
+        project_manager: project.project_manager,
+        team_members: project.team_members,
+        total_tasks: totalTasks,
+        completed_tasks: completedTasks,
+        in_progress_tasks: inProgressTasks,
+        completion_rate: completionRate,
+      };
+    });
 
     res.status(200).json({
       success: true,

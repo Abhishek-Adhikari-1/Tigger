@@ -342,7 +342,7 @@ const updateTask = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: updated,
+      data: affectedCount,
       message: "Task updated successfully",
     });
   } catch (error) {
