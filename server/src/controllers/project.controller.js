@@ -354,10 +354,118 @@ const updateProject = async (req, res) => {
   }
 };
 
+const getDashboardStats = async (req, res) => {
+  try {
+    const { orgId, userId } = req.clerk;
+
+    if (!orgId) {
+      return res.status(400).json({
+        success: false,
+        message: "No organization selected",
+      });
+    }
+
+    // Get all projects with tasks
+    const projects = await Project.findAll({
+      where: { orgId },
+      include: [
+        {
+          model: Task,
+          as: "tasks",
+          attributes: ["id", "status", "assignee", "due_date", "title", "type", "priority", "projectId"],
+          required: false,
+        },
+      ],
+      order: [["updatedAt", "DESC"]],
+    });
+
+    // Calculate stats
+    const totalProjects = projects.length;
+    const completedProjects = projects.filter((p) => p.status === "Completed").length;
+
+    // Collect all tasks assigned to current user
+    const myTasks = [];
+    const overdueTasks = [];
+    const now = new Date();
+
+    projects.forEach((project) => {
+      project.tasks?.forEach((task) => {
+        if (task.assignee === userId) {
+          myTasks.push({
+            id: task.id,
+            title: task.title,
+            status: task.status,
+            type: task.type,
+            priority: task.priority,
+            due_date: task.due_date,
+            projectId: task.projectId,
+            projectName: project.name,
+          });
+        }
+
+        // Check for overdue (due_date is past and status is not Done)
+        if (task.due_date && new Date(task.due_date) < now && task.status !== "Done") {
+          overdueTasks.push({
+            id: task.id,
+            title: task.title,
+            status: task.status,
+            type: task.type,
+            priority: task.priority,
+            due_date: task.due_date,
+            projectId: task.projectId,
+            projectName: project.name,
+            assignee: task.assignee,
+          });
+        }
+      });
+    });
+
+    // Format recent projects (limit 5)
+    const recentProjects = projects.slice(0, 5).map((project) => {
+      const tasks = project.tasks || [];
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter((t) => t.status === "Done").length;
+      const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+      return {
+        projectId: project.projectId,
+        name: project.name,
+        description: project.description,
+        status: project.status,
+        team_members: project.team_members,
+        end_date: project.end_date,
+        total_tasks: totalTasks,
+        completed_tasks: completedTasks,
+        completion_rate: completionRate,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        totalProjects,
+        completedProjects,
+        myTasksCount: myTasks.length,
+        overdueCount: overdueTasks.length,
+        myTasks: myTasks.slice(0, 5),
+        overdueTasks: overdueTasks.slice(0, 5),
+        recentProjects,
+      },
+    });
+  } catch (error) {
+    console.error("Error in getDashboardStats controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch dashboard stats",
+    });
+  }
+};
+
 export const ProjectController = {
   createProject,
   getAllProjects,
   getProjectById,
   deleteProject,
   updateProject,
+  getDashboardStats,
 };

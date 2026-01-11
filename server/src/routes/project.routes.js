@@ -13,6 +13,8 @@ router.post(
 
 router.get("/all", ProjectController.getAllProjects);
 
+router.get("/dashboard", ProjectController.getDashboardStats);
+
 router.get("/:projectId", ProjectController.getProjectById);
 
 router.delete("/:projectId", ProjectController.deleteProject);
