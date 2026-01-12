@@ -29,7 +29,7 @@ import { useProjectsStore } from "../../store/use-project";
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard },
   { name: "Projects", path: "/projects", icon: FolderOpenIcon },
-  { name: "Team", path: "/team", icon: UsersIcon },
+  { name: "Calendar", path: "/calendar", icon: CalendarIcon },
 ];
 
 const STATUS_COLORS = {
@@ -44,7 +44,7 @@ export default function Sidebar() {
   const [myTasksOpen, setMyTasksOpen] = useState(true);
   const [projectsOpen, setProjectsOpen] = useState(true);
   const [expandedProjects, setExpandedProjects] = useState({});
-  
+
   const { projects } = useProjectsStore();
   const { user } = useUser();
 
