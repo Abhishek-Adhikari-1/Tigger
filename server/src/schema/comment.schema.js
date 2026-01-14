@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
-import { Task } from "./task.model.js";
+import { Task } from "./task.schema.js";
 
 export const Comment = sequelize.define(
   "comment",

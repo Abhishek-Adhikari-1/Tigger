@@ -9,6 +9,9 @@ const ProjectsPage = lazy(() => import("../app/projects/page"));
 const ProjectPageSpecific = lazy(() =>
   import("../app/projects/[projectId]/page")
 );
+const TaskDetailPage = lazy(() =>
+  import("../app/projects/[projectId]/[taskId]/page")
+);
 
 const routes = [
   {
@@ -46,6 +49,11 @@ const routes = [
       {
         path: "projects/:projectId",
         component: ProjectPageSpecific,
+        public: false,
+      },
+      {
+        path: "projects/:projectId/:taskId",
+        component: TaskDetailPage,
         public: false,
       },
     ],
