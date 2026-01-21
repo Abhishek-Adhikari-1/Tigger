@@ -8,6 +8,7 @@ import { dbConnection } from "./config/db.js";
 import { projectRoutes } from "./routes/project.routes.js";
 import { taskRoutes } from "./routes/task.routes.js";
 import { commentRoutes } from "./routes/comment.routes.js";
+import { calendarRoutes } from "./routes/calendar.routes.js";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 // app.use(apiLimiter);
@@ -46,6 +47,7 @@ app.get("/health", (req, res) => {
 app.use("/api/projects", clerkAuth, projectRoutes);
 app.use("/api/tasks", clerkAuth, taskRoutes);
 app.use("/api/comments", clerkAuth, commentRoutes);
+app.use("/api/calendar", clerkAuth, calendarRoutes);
 
 app.get("/api/protected", clerkAuth, (req, res) => {
   res.status(200).json({

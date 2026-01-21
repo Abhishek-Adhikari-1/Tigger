@@ -6,12 +6,13 @@ const SignInPage = lazy(() => import("../app/auth/signin/page"));
 const SignUpPage = lazy(() => import("../app/auth/signup/page"));
 const DashboardPage = lazy(() => import("../app/dashboard/page"));
 const ProjectsPage = lazy(() => import("../app/projects/page"));
-const ProjectPageSpecific = lazy(() =>
-  import("../app/projects/[projectId]/page")
+const ProjectPageSpecific = lazy(
+  () => import("../app/projects/[projectId]/page"),
 );
-const TaskDetailPage = lazy(() =>
-  import("../app/projects/[projectId]/[taskId]/page")
+const TaskDetailPage = lazy(
+  () => import("../app/projects/[projectId]/[taskId]/page"),
 );
+const CalendarPage = lazy(() => import("../app/calendar/page"));
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
       {
         path: "projects/:projectId/:taskId",
         component: TaskDetailPage,
+        public: false,
+      },
+      {
+        path: "calendar",
+        component: CalendarPage,
         public: false,
       },
     ],
