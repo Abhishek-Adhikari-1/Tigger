@@ -5,10 +5,13 @@ import { ThemeProvider, useTheme } from "next-themes";
 import { dark, light } from "@clerk/themes";
 import AppRouter from "./AppRouter.jsx";
 import "./global.css";
+import "./custom-mouse.css";
 import { BrowserRouter } from "react-router-dom";
 import Loader from "./components/ui/loader.jsx";
 import { ThemeToggle } from "./components/themes/theme-toggle.jsx";
 import { Toaster } from "react-hot-toast";
+import CustomMouse from "./components/ui/custom-mouse.jsx";
+import { CursorProvider } from "./context/CursorContext.jsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -18,10 +21,14 @@ if (!PUBLISHABLE_KEY) {
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider attribute="class" defaultTheme="system">
-      <Root />
-    </ThemeProvider>
-  </StrictMode>
+    <CursorProvider>
+      <CustomMouse>
+        <ThemeProvider attribute="class" defaultTheme="system">
+          <Root />
+        </ThemeProvider>
+      </CustomMouse>
+    </CursorProvider>
+  </StrictMode>,
 );
 
 export function Root() {
@@ -61,13 +68,13 @@ export function Root() {
         </ClerkLoading>
 
         <AppRouter />
-        <Toaster 
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 3000,
             style: {
-              background: 'var(--toast-bg, #fff)',
-              color: 'var(--toast-color, #333)',
+              background: "var(--toast-bg, #fff)",
+              color: "var(--toast-color, #333)",
             },
           }}
         />

@@ -1,5 +1,6 @@
 import { UserButton } from "@clerk/react-router";
 import { ThemeToggle } from "../themes/theme-toggle";
+import { CursorToggle } from "./cursor-toggle";
 
 export default function Header() {
   return (
@@ -13,6 +14,7 @@ export default function Header() {
 
       {/* Right section */}
       <div className="flex items-center gap-3">
+        <CursorToggle />
         <ThemeToggle className="size-8 rounded-md" innerIconSize="1rem" />
         <UserButton />
       </div>
